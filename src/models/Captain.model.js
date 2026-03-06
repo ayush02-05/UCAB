@@ -1,6 +1,8 @@
 const { default: mongoose } = require("mongoose");
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 
-const DriverSchema = new mongoose.Schema({
+const CaptainSchema = new mongoose.Schema({
   fullname: {
     firstname: {
       type: String,
@@ -43,16 +45,32 @@ const DriverSchema = new mongoose.Schema({
       min: [1, "Capacity must be atleast 1"],
     },
     vehicletype: {
-      type: Number,
+      type: String,
       enum: ["motorcycle", "car", "auto"],
+      required: true,
     },
   },
   location: {
-    lat: {
-      type: Number,
-    },
-    lng: {
-      type: Number,
-    },
+    lat: Number,
+    lng: Number,
   },
 });
+
+CaptainSchema.methods.generateAuthToken = function () {
+  const token = jwt.sign({ _id: this._id }, process.env.JWT_SECRET, {
+    expiresIn: "24h",
+  });
+  return token;
+};
+
+CaptainSchema.methods.comparePassword = async function (password) {
+  return await bcrypt.compare(password, this.password);
+};
+
+CaptainSchema.statics.hashPassword = async function (password) {
+  return await bcrypt.hash(password, 10);
+};
+
+const CaptainModel = mongoose.model("Captain", CaptainSchema);
+
+module.exports = CaptainModel;
