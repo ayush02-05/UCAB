@@ -4,8 +4,24 @@ import { UserPlus, Mail, Lock, Phone, User } from "lucide-react"
 import { Button } from "../../components/ui/Button"
 import { Input } from "../../components/ui/Input"
 import { motion } from "motion/react"
+import { useForm } from "react-hook-form"
 
 export function UserSignup() {
+  const { register, handleSubmit } = useForm({
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "",
+      password: "",
+      confirmPassword: "",
+    },
+  })
+
+  const onSubmit = () => {
+    window.location.href = "/dashboard"
+  }
+
   return (
     <div className="min-h-[calc(100vh-64px)] flex items-center justify-center bg-zinc-50 py-12 px-4">
       <motion.div 
@@ -22,7 +38,7 @@ export function UserSignup() {
           <p className="text-zinc-500 mt-2 text-center">Join UCab to book affordable rides instantly</p>
         </div>
 
-        <form className="space-y-5" onSubmit={(e) => { e.preventDefault(); window.location.href = '/dashboard'; }}>
+        <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-zinc-700">First Name</label>
@@ -30,7 +46,12 @@ export function UserSignup() {
                 <div className="absolute top-1/2 left-3 -translate-y-1/2 text-zinc-400">
                   <User size={18} />
                 </div>
-                <Input type="text" placeholder="John" className="pl-10 h-12" required />
+                <Input
+                  type="text"
+                  placeholder="John"
+                  className="pl-10 h-12"
+                  {...register("firstName", { required: true })}
+                />
               </div>
             </div>
             <div className="space-y-1.5">
@@ -39,7 +60,12 @@ export function UserSignup() {
                 <div className="absolute top-1/2 left-3 -translate-y-1/2 text-zinc-400">
                   <User size={18} />
                 </div>
-                <Input type="text" placeholder="Doe" className="pl-10 h-12" required />
+                <Input
+                  type="text"
+                  placeholder="Doe"
+                  className="pl-10 h-12"
+                  {...register("lastName", { required: true })}
+                />
               </div>
             </div>
           </div>
@@ -50,7 +76,12 @@ export function UserSignup() {
               <div className="absolute top-1/2 left-3 -translate-y-1/2 text-zinc-400">
                 <Mail size={18} />
               </div>
-              <Input type="email" placeholder="john@example.com" className="pl-10 h-12" required />
+              <Input
+                type="email"
+                placeholder="john@example.com"
+                className="pl-10 h-12"
+                {...register("email", { required: true })}
+              />
             </div>
           </div>
 
@@ -60,7 +91,12 @@ export function UserSignup() {
               <div className="absolute top-1/2 left-3 -translate-y-1/2 text-zinc-400">
                 <Phone size={18} />
               </div>
-              <Input type="tel" placeholder="+1 (555) 000-0000" className="pl-10 h-12" required />
+              <Input
+                type="tel"
+                placeholder="+1 (555) 000-0000"
+                className="pl-10 h-12"
+                {...register("phone", { required: true })}
+              />
             </div>
           </div>
 
@@ -71,7 +107,12 @@ export function UserSignup() {
                 <div className="absolute top-1/2 left-3 -translate-y-1/2 text-zinc-400">
                   <Lock size={18} />
                 </div>
-                <Input type="password" placeholder="••••••••" className="pl-10 h-12" required />
+                <Input
+                  type="password"
+                  placeholder="••••••••"
+                  className="pl-10 h-12"
+                  {...register("password", { required: true })}
+                />
               </div>
             </div>
             <div className="space-y-1.5">
@@ -80,7 +121,12 @@ export function UserSignup() {
                 <div className="absolute top-1/2 left-3 -translate-y-1/2 text-zinc-400">
                   <Lock size={18} />
                 </div>
-                <Input type="password" placeholder="••••••••" className="pl-10 h-12" required />
+                <Input
+                  type="password"
+                  placeholder="••••••••"
+                  className="pl-10 h-12"
+                  {...register("confirmPassword", { required: true })}
+                />
               </div>
             </div>
           </div>

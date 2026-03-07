@@ -4,8 +4,20 @@ import { CarFront, Mail, Lock } from "lucide-react"
 import { Button } from "../../components/ui/Button"
 import { Input } from "../../components/ui/Input"
 import { motion } from "motion/react"
+import { useForm } from "react-hook-form"
 
 export function DriverLogin() {
+  const { register, handleSubmit } = useForm({
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  })
+
+  const onSubmit = () => {
+    window.location.href = '/driver/dashboard'
+  }
+
   return (
     <div className="min-h-[calc(100vh-64px)] flex items-center justify-center bg-zinc-900 py-12 px-4">
       <motion.div 
@@ -22,7 +34,7 @@ export function DriverLogin() {
           <p className="text-zinc-400 mt-2 text-center">Login to your driver account to accept rides</p>
         </div>
 
-        <form className="space-y-5" onSubmit={(e) => { e.preventDefault(); window.location.href = '/driver/dashboard'; }}>
+        <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
           <div className="space-y-1.5">
             <label className="text-sm font-medium text-zinc-300">Email Address</label>
             <div className="relative">
@@ -33,7 +45,7 @@ export function DriverLogin() {
                 type="email" 
                 placeholder="driver@example.com" 
                 className="pl-10 h-12 bg-zinc-900 border-zinc-700 text-white placeholder:text-zinc-600 focus-visible:ring-yellow-400" 
-                required 
+                {...register("email", { required: true })}
               />
             </div>
           </div>
@@ -51,7 +63,7 @@ export function DriverLogin() {
                 type="password" 
                 placeholder="••••••••" 
                 className="pl-10 h-12 bg-zinc-900 border-zinc-700 text-white placeholder:text-zinc-600 focus-visible:ring-yellow-400" 
-                required 
+                {...register("password", { required: true })}
               />
             </div>
           </div>

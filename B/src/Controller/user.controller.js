@@ -11,10 +11,6 @@ async function registerUser(req, res) {
 
   const { fullname, email, password, confirmPassword } = req.body;
 
-  if (password !== confirmPassword) {
-    return res.status(400).json({ message: "Passwords do not match" });
-  }
-
   const isExist = await UserModel.findOne({ email });
 
   if (isExist) {
@@ -39,7 +35,6 @@ async function registerUser(req, res) {
   });
 
   res.status(201).json({
-    token,
     user,
   });
 }
@@ -64,10 +59,12 @@ async function loginUser(req, res) {
   }
 
   const token = await user.generateAuthToken();
-  res.cookie("token", token);
+  res.cookie("token", token, {
+    httpOnly: true,
+  });
   res.status(200).json({
     message: "Loggedin Successfully",
-    token,
+
     user,
   });
 }

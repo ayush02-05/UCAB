@@ -8,20 +8,30 @@ async function registerCaptain(req, res) {
     return res.status(400).json({ errors: error.array() });
   }
 
-  const { fullname, email, password, vehicle } = req.body;
-  const { color, plate, capacity, vehicletype } = vehicle;
+  const { fullname, email, password, phone, vehicle } = req.body;
+
+  const color = vehicle?.color;
+  const plate = vehicle?.plate;
+  const capacity = vehicle?.capacity;
+  const vehicletype = vehicle?.vehicletype;
+
+  console.log(fullname, email, password, phone, vehicle);
 
   if (
     !fullname?.firstname ||
     !fullname?.lastname ||
     !email ||
     !password ||
+    !phone ||
     !color ||
     !plate ||
     !capacity ||
     !vehicletype
   ) {
-    return res.status(400).json({ message: "All fields are required" });
+    return res.status(400).json({
+      message: "All fields are required",
+      body: req.body,
+    });
   }
 
   const isExist = await CaptainModel.findOne({ email });
@@ -39,6 +49,7 @@ async function registerCaptain(req, res) {
     },
     email,
     password: hashedPassword,
+    phone,
     vehicle: {
       color,
       plate,
@@ -49,10 +60,11 @@ async function registerCaptain(req, res) {
 
   const token = captain.generateAuthToken();
 
-  res.cookie("token", token);
+  res.cookie("token", token, {
+    httpOnly: true,
+  });
 
   res.status(201).json({
-    token,
     captain,
   });
 }

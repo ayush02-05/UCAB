@@ -1,32 +1,45 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAppContext } from '../../context/AppContext';
-import { Mail, Lock, LogIn, ArrowRight } from 'lucide-react';
-import { toast } from 'sonner';
+import React from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAppContext } from "../../context/AppContext";
+import { Mail, Lock, LogIn, ArrowRight } from "lucide-react";
+import { toast } from "sonner";
+import { useForm } from "react-hook-form";
+import axios from "axios";
 
 export function LoginPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const { login } = useAppContext();
   const navigate = useNavigate();
+  const { register, handleSubmit } = useForm({
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
 
-  const handleLogin = (e) => {
-    e.preventDefault();
+  const handleLogin = async (data) => {
+    const { email, password } = data;
     if (!email || !password) {
-      toast.error('Please fill in all fields');
+      toast.error("Please fill in all fields");
       return;
     }
 
-    // Mock login
-    login({
-      id: 'usr123',
-      name: email.split('@')[0],
-      email: email,
-      role: 'user',
-    });
-    
-    toast.success('Login successful!');
-    navigate('/dashboard');
+    try {
+      const response = await axios.post(
+        "http://localhost:4000/api/user/login",
+        data,
+        { withCredentials: true },
+      );
+
+      // Mock login
+      login({
+        user: response.data.user,
+        role: "user",
+      });
+      toast.success("Login successful!");
+      navigate("/dashboard");
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -40,43 +53,47 @@ export function LoginPage() {
             Sign in to your UCab account
           </p>
         </div>
-        <form className="mt-8 space-y-6" onSubmit={handleLogin}>
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit(handleLogin)}>
           <div className="rounded-md shadow-sm space-y-4">
             <div>
-              <label htmlFor="email-address" className="block text-sm font-medium text-gray-700">Email address</label>
+              <label
+                htmlFor="email-address"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Email address
+              </label>
               <div className="mt-1 relative rounded-md shadow-sm">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Mail className="h-5 w-5 text-gray-400" />
                 </div>
                 <input
                   id="email-address"
-                  name="email"
                   type="email"
                   autoComplete="email"
-                  required
                   className="appearance-none block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-black sm:text-sm"
                   placeholder="you@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  {...register("email", { required: true })}
                 />
               </div>
             </div>
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Password
+              </label>
               <div className="mt-1 relative rounded-md shadow-sm">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Lock className="h-5 w-5 text-gray-400" />
                 </div>
                 <input
                   id="password"
-                  name="password"
                   type="password"
                   autoComplete="current-password"
-                  required
                   className="appearance-none block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-black sm:text-sm"
                   placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  {...register("password", { required: true })}
                 />
               </div>
             </div>
@@ -90,13 +107,19 @@ export function LoginPage() {
                 type="checkbox"
                 className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
               />
-              <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
+              <label
+                htmlFor="remember-me"
+                className="ml-2 block text-sm text-gray-900"
+              >
                 Remember me
               </label>
             </div>
 
             <div className="text-sm">
-              <a href="#" className="font-medium text-blue-600 hover:text-blue-500">
+              <a
+                href="#"
+                className="font-medium text-blue-600 hover:text-blue-500"
+              >
                 Forgot password?
               </a>
             </div>
@@ -114,11 +137,14 @@ export function LoginPage() {
             </button>
           </div>
         </form>
-        
+
         <div className="text-center pt-4 border-t border-gray-100">
           <p className="text-sm text-gray-600">
-            Don't have an account?{' '}
-            <Link to="/register" className="font-medium text-blue-600 hover:text-blue-500 flex items-center justify-center mt-2">
+            Don't have an account?{" "}
+            <Link
+              to="/register"
+              className="font-medium text-blue-600 hover:text-blue-500 flex items-center justify-center mt-2"
+            >
               Create an account <ArrowRight className="ml-1 w-4 h-4" />
             </Link>
           </p>
