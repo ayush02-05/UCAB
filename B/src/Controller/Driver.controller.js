@@ -90,7 +90,7 @@ async function loginCaptian(req, res) {
 
   const token = await captain.generateAuthToken();
   res.cookie("token", token);
-  res.status(200).json({
+  res.status(201).json({
     message: "Loggedin Successfully",
     token,
     captain,

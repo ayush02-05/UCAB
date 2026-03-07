@@ -1,13 +1,13 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAppContext } from "../../context/AppContext";
 import { User, Mail, Lock, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import axios from "axios";
 import { useForm } from "react-hook-form";
+import { useUser } from "../../context/UserContext";
 
 export function RegisterPage() {
-  const { login } = useAppContext();
+  const { login } = useUser();
   const navigate = useNavigate();
 
   const {
@@ -38,14 +38,15 @@ export function RegisterPage() {
         data,
         { withCredentials: true },
       );
+      if (response.status == 201) {
+        login({
+          user: response.data.user,
+          role: "user",
+        });
 
-      login({
-        user: response.data.user,
-        role: "user",
-      });
-
-      toast.success("Registration successful! Welcome to UCab.");
-      navigate("/dashboard");
+        toast.success("Registration successful! Welcome to UCab.");
+        navigate("/dashboard");
+      }
     } catch (error) {
       console.log(error);
     }

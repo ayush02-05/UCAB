@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Menu, X, User as UserIcon, LogOut } from "lucide-react";
-import { useAppContext } from "../context/AppContext";
 import axios from "axios";
+import { useUser } from "../context/UserContext";
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const { user, logout } = useAppContext();
+  const { user, logout } = useUser();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -14,7 +14,7 @@ export function Navbar() {
       await axios.delete("http://localhost:4000/api/user/logout", {
         withCredentials: true,
       });
-      logout();
+      // logout();
       setIsOpen(false);
       navigate("/");
     } catch (error) {

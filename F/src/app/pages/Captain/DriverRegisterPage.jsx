@@ -14,9 +14,10 @@ import {
 import { toast } from "sonner";
 import axios from "axios";
 import { useForm } from "react-hook-form";
+import { useCaptain } from "../../context/CaptainContext";
 
 export function DriverRegisterPage() {
-  const { login } = useAppContext();
+  const { login } = useCaptain();
   const navigate = useNavigate();
 
   const { register, handleSubmit } = useForm({
@@ -32,13 +33,17 @@ export function DriverRegisterPage() {
       );
 
       // Mock Driver Registration
-      login({
-        captain: response.data.captain,
-        role: "driver",
-      });
+      if (response.status == 201) {
+        login({
+          captain: response.data.captain,
+          role: "driver",
+        });
 
-      toast.success("Driver application submitted! Welcome to UCab Partners.");
-      navigate("/dashboard");
+        toast.success(
+          "Driver application submitted! Welcome to UCab Partners.",
+        );
+        navigate("/captain-dashboard");
+      }
     } catch (error) {
       console.log(error);
     }
@@ -238,7 +243,7 @@ export function DriverRegisterPage() {
           <p className="text-sm text-gray-600">
             Already a partner?{" "}
             <Link
-              to="/login"
+              to="/captain-login"
               className="font-medium text-blue-600 hover:text-blue-500"
             >
               Sign in here

@@ -1,13 +1,13 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAppContext } from "../../context/AppContext";
 import { Mail, Lock, LogIn, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import axios from "axios";
+import { useUser } from "../../context/UserContext";
 
 export function LoginPage() {
-  const { login } = useAppContext();
+  const { login } = useUser();
   const navigate = useNavigate();
   const { register, handleSubmit } = useForm({
     defaultValues: {
@@ -31,12 +31,14 @@ export function LoginPage() {
       );
 
       // Mock login
-      login({
-        user: response.data.user,
-        role: "user",
-      });
-      toast.success("Login successful!");
-      navigate("/dashboard");
+      if (response.status == 201) {
+        login({
+          user: response.data.user,
+          role: "user",
+        });
+        toast.success("Login successful!");
+        navigate("/dashboard");
+      }
     } catch (error) {
       console.log(error);
     }
