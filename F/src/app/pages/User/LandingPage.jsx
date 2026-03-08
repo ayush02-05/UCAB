@@ -9,6 +9,7 @@ import {
   Navigation,
 } from "lucide-react";
 import { motion } from "motion/react";
+import { Footer } from "../../components/Footer";
 
 export function LandingPage() {
   const features = [
@@ -150,6 +151,8 @@ export function LandingPage() {
           </Link>
         </div>
       </section>
+
+      <Footer />
     </div>
   );
 }

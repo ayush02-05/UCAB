@@ -1,7 +1,6 @@
-import React from 'react';
-import { Outlet } from 'react-router-dom';
-import { Navbar } from './components/Navbar';
-import { Footer } from './components/Footer';
+import React from "react";
+import { Outlet } from "react-router-dom";
+import { Navbar } from "./components/Navbar";
 
 export function Layout() {
   return (
@@ -10,7 +9,6 @@ export function Layout() {
       <main className="flex-grow flex flex-col">
         <Outlet />
       </main>
-      <Footer />
     </div>
   );
 }

@@ -3,6 +3,7 @@ const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const userRoutes = require("./routes/User.routes");
 const captainRoutes = require("./routes/Driver.route");
+const mapRoutes = require("./routes/maps.routes");
 
 // server creatd
 const app = express();
@@ -15,5 +16,6 @@ app.use(cookieParser());
 // api Connect
 app.use("/api/user", userRoutes);
 app.use("/api/captain", captainRoutes);
+app.use("/map", mapRoutes);
 
 module.exports = app;

@@ -7,6 +7,7 @@ export const AppProvider = ({ children }) => {
 
   const [pickupLocation, setPickupLocation] = useState("");
   const [dropLocation, setDropLocation] = useState("");
+  const [panelOpen, setpanelOpen] = useState(false);
 
   const [currentRide, setCurrentRide] = useState(null);
   const [rideHistory, setRideHistory] = useState([
@@ -58,25 +59,23 @@ export const AppProvider = ({ children }) => {
     setRideHistory([ride, ...rideHistory]);
   };
 
-  return (
-    <AppContext.Provider
-      value={{
-        user,
-        login,
-        logout,
-        pickupLocation,
-        setPickupLocation,
-        dropLocation,
-        setDropLocation,
-        currentRide,
-        setCurrentRide,
-        rideHistory,
-        addRideToHistory,
-      }}
-    >
-      {children}
-    </AppContext.Provider>
-  );
+  const value = {
+    user,
+    login,
+    logout,
+    pickupLocation,
+    setPickupLocation,
+    dropLocation,
+    setDropLocation,
+    currentRide,
+    setCurrentRide,
+    rideHistory,
+    addRideToHistory,
+    panelOpen,
+    setpanelOpen,
+  };
+
+  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };
 
 export const useAppContext = () => {
