@@ -45,7 +45,7 @@ export function LandingPage() {
       <section className="relative bg-black text-white h-[90vh] flex items-center overflow-hidden">
         <div className="absolute inset-0 z-0">
           <img
-            src="https://images.unsplash.com/photo-1741021800716-445a352792d1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjBjYXIlMjBjaXR5JTIwc3RyZWV0fGVufDF8fHx8MTc3Mjg1NzQ2OXww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
+            src="https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80"
             alt="Modern Cab in City"
             className="w-full h-full object-cover opacity-50"
           />

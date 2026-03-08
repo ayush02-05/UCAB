@@ -11,6 +11,6 @@ route.get(
   mapController.getDistanceTime,
 );
 
-route.get("/autocomplete", Auth.authenticaton, mapController.getSuggestions);
+route.get("/suggestions", Auth.authenticaton, mapController.getSuggestions);
 
 module.exports = route;

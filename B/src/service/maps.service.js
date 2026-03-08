@@ -27,20 +27,17 @@ const getCoordinatesFromAddress = async (address) => {
   }
 };
 
-const getDistanceTimefromAddress = async (
-  originAddress,
-  destinationAddress,
-) => {
-  if (!originAddress || !destinationAddress) {
-    throw new Error("Origin and Destination are required");
+const getDistanceTimefromAddress = async (pickup, destination) => {
+  if (!pickup || !destination) {
+    throw new Error("picup and Destination are required");
   }
 
   // Convert address → coordinates
-  const origin = await getCoordinatesFromAddress(originAddress);
-  const destination = await getCoordinatesFromAddress(destinationAddress);
+  const origin = await getCoordinatesFromAddress(pickup);
+  const drop = await getCoordinatesFromAddress(destination);
 
   // Routing
-  const url = `${OSRM}/route/v1/driving/${origin.lng},${origin.lat};${destination.lng},${destination.lat}?overview=false`;
+  const url = `${OSRM}/route/v1/driving/${origin.lng},${origin.lat};${drop.lng},${drop.lat}?overview=false`;
 
   const response = await axios.get(url);
 
@@ -48,7 +45,7 @@ const getDistanceTimefromAddress = async (
 
   return {
     origin,
-    destination,
+    drop,
     distance_meters: route.distance,
     duration_seconds: route.duration,
     distance_km: (route.distance / 1000).toFixed(2),
@@ -56,20 +53,20 @@ const getDistanceTimefromAddress = async (
   };
 };
 
-const getAutoCompleteSuggestions = async (query) => {
-  if (!query) {
-    throw new Error("Query is required");
-  }
+const getAutoCompleteSuggestions = async (query, localCity = "Jabalpur") => {
+  if (!query) throw new Error("Query is required");
 
   try {
-    const response = await axios.get(PHOTON, {
+    // fetch from Photon (real global suggestions)
+    const response = await axios.get("https://photon.komoot.io/api", {
       params: {
         q: query,
-        limit: 5,
+        limit: 10, // get extra results to sort
       },
     });
 
-    return response.data.features.map((place) => ({
+    // map results
+    const suggestions = response.data.features.map((place) => ({
       name: place.properties.name,
       city: place.properties.city,
       state: place.properties.state,
@@ -77,10 +74,26 @@ const getAutoCompleteSuggestions = async (query) => {
       lat: place.geometry.coordinates[1],
       lng: place.geometry.coordinates[0],
       full_address:
-        place.properties.name + ", " + (place.properties.city || ""),
+        place.properties.name +
+        (place.properties.city ? ", " + place.properties.city : "") +
+        (place.properties.state ? ", " + place.properties.state : "") +
+        (place.properties.country ? ", " + place.properties.country : ""),
     }));
+
+    // sort: local city first, then others
+    suggestions.sort((a, b) => {
+      const aLocal = a.city && a.city.toLowerCase() === localCity.toLowerCase();
+      const bLocal = b.city && b.city.toLowerCase() === localCity.toLowerCase();
+
+      if (aLocal && !bLocal) return -1; // a first
+      if (!aLocal && bLocal) return 1; // b first
+      return 0; // keep original order otherwise
+    });
+
+    // limit results to 5 for frontend
+    return suggestions.slice(0, 5);
   } catch (error) {
-    console.error(error.message);
+    console.error("AutoComplete Error:", error.message);
     throw new Error("Unable to fetch suggestions");
   }
 };

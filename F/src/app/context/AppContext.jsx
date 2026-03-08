@@ -8,7 +8,8 @@ export const AppProvider = ({ children }) => {
   const [pickupLocation, setPickupLocation] = useState("");
   const [dropLocation, setDropLocation] = useState("");
   const [panelOpen, setpanelOpen] = useState(false);
-
+  const [vehicletype, setVehicletype] = useState("");
+  const [vehicleImage, setVehicleImage] = useState("");
   const [currentRide, setCurrentRide] = useState(null);
   const [rideHistory, setRideHistory] = useState([
     {
@@ -47,6 +48,8 @@ export const AppProvider = ({ children }) => {
     },
   ]);
 
+  console.log(pickupLocation, dropLocation);
+
   const login = (userData) => setUser(userData);
   const logout = () => {
     setUser(null);
@@ -73,6 +76,10 @@ export const AppProvider = ({ children }) => {
     addRideToHistory,
     panelOpen,
     setpanelOpen,
+    vehicletype,
+    setVehicletype,
+    vehicleImage,
+    setVehicleImage,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
