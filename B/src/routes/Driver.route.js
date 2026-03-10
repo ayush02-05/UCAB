@@ -2,6 +2,7 @@ const express = require("express");
 const route = express.Router();
 const { body } = require("express-validator");
 const DriverController = require("../Controller/Driver.controller");
+const Auth = require("../middleware/auth.middleware");
 
 route.post(
   "/register",
@@ -32,6 +33,14 @@ route.post(
       .withMessage("Password must be at least 6 characters"),
   ],
   DriverController.loginCaptian,
+);
+
+route.get("/profile", Auth.Captainauthenticaton, DriverController.getProfile);
+
+route.delete(
+  "/logout",
+  Auth.Captainauthenticaton,
+  DriverController.logOutCaptain,
 );
 
 module.exports = route;

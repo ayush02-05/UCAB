@@ -49,12 +49,9 @@ export function DriverRegisterPage() {
   };
 
   return (
-    <div className="flex-grow flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-xl w-full bg-white rounded-2xl shadow-xl p-8 space-y-6">
+    <div className="flex-grow flex items-center justify-center bg-gray-50 py-1 px-4 sm:px-6 lg:px-8 ">
+      <div className="max-w-lg w-full bg-white rounded-2xl shadow-xl p-8 py-[-50%] space-y-6">
         <div className="text-center">
-          <div className="mx-auto w-16 h-16 bg-black rounded-full flex items-center justify-center mb-4 shadow-lg">
-            <Car className="w-8 h-8 text-white" />
-          </div>
           <h2 className="text-3xl font-extrabold text-gray-900">
             Drive with UCab
           </h2>

@@ -3,18 +3,30 @@ import { Link, useNavigate } from "react-router-dom";
 import { Menu, X, User as UserIcon, LogOut } from "lucide-react";
 import axios from "axios";
 import { useUser } from "../context/UserContext";
+import { useCaptain } from "../context/CaptainContext";
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const { user, logout } = useUser();
+  const { captain, captainlogout } = useCaptain();
   const navigate = useNavigate();
-
+  const currentUser = user || captain;
   const handleLogout = async () => {
     try {
-      await axios.delete("http://localhost:4000/api/user/logout", {
-        withCredentials: true,
-      });
-      // logout();
+      if (user) {
+        await axios.delete("http://localhost:4000/api/user/logout", {
+          withCredentials: true,
+        });
+        logout();
+      }
+
+      if (captain) {
+        await axios.delete("http://localhost:4000/api/captain/logout", {
+          withCredentials: true,
+        });
+        captainlogout();
+      }
+
       setIsOpen(false);
       navigate("/");
     } catch (error) {
@@ -27,10 +39,16 @@ export function Navbar() {
         { name: "Dashboard", path: "/dashboard" },
         { name: "My Rides", path: "/history" },
       ]
-    : [
-        { name: "Features", path: "/#features" },
-        { name: "Driver Partner", path: "/driver-register" },
-      ];
+    : captain
+      ? [
+          { name: "Captain Dashboard", path: "/captain-dashboard" },
+          { name: "Ride Requests", path: "/captain-rides" },
+          { name: "Earnings", path: "/captain-earnings" },
+        ]
+      : [
+          { name: "Features", path: "/#features" },
+          { name: "Driver Partner", path: "/driver-register" },
+        ];
 
   return (
     <nav className="bg-gradient-to-t from-black to-gray-800 text-white shadow-md sticky top-0 z-50">
@@ -54,11 +72,11 @@ export function Navbar() {
               </Link>
             ))}
 
-            {user ? (
+            {currentUser ? (
               <div className="flex items-center space-x-4">
                 <div className="flex items-center space-x-2 text-sm font-medium">
                   <UserIcon className="h-5 w-5 text-gray-400" />
-                  <span>{user.name}</span>
+                  <span>{currentUser.name}</span>
                 </div>
                 <button
                   onClick={handleLogout}
@@ -117,7 +135,7 @@ export function Navbar() {
                 {link.name}
               </Link>
             ))}
-            {user ? (
+            {currentUser ? (
               <>
                 <div className="border-t border-gray-700 mt-2 pt-2">
                   <div className="flex items-center px-3 py-2">
@@ -126,10 +144,10 @@ export function Navbar() {
                     </div>
                     <div className="ml-3">
                       <div className="text-base font-medium text-white">
-                        {user.name}
+                        {currentUser.name}
                       </div>
                       <div className="text-sm font-medium text-gray-400">
-                        {user.email}
+                        {currentUser.email}
                       </div>
                     </div>
                   </div>

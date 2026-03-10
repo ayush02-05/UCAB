@@ -10,8 +10,6 @@ export function UserProvider({ children }) {
   const login = (userData) => setUser(userData);
   const logout = () => {
     setUser(null);
-    setPickupLocation("");
-    setDropLocation("");
     setCurrentRide(null);
   };
 

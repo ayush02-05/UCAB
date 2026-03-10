@@ -27,7 +27,7 @@ function CaptainProtectedRoute({ children }) {
 
   if (loading) return <div>Loading...</div>;
 
-  if (!captain) return <Navigate to="/captain-login" />;
+  if (!captain) return <Navigate to="/" />;
 
   return children;
 }

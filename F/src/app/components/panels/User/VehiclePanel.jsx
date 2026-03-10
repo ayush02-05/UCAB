@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { ArrowLeft, Info, Clock, ChevronRight } from "lucide-react";
-import { useAppContext } from "../../context/AppContext";
+import { useAppContext } from "../../../context/AppContext";
 import axios from "axios";
 
 // 1. Keep the vehicle list simple and outside the component logic

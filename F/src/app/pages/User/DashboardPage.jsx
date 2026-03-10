@@ -1,16 +1,32 @@
-import React, { useState } from "react";
-import { useAppContext } from "../../context/AppContext";
-import { VehiclePanel } from "../../components/panels/VehiclePanel";
-import { RideStatusPanel } from "../../components/panels/RideStatusPanel";
-import { LocationPanel } from "../../components/panels/LocationPanel";
-import { ConfirmPanel } from "../../components/panels/ConfirmPanel";
+import React, { useEffect, useState } from "react";
+import { ConfirmPanel } from "../../components/panels/User/ConfirmPanel";
+import { LocationPanel } from "../../components/panels/User/LocationPanel";
+import { VehiclePanel } from "../../components/panels/User/VehiclePanel";
+import { RideStatusPanel } from "../../components/panels/User/RideStatusPanel";
+import { useSocket } from "../../context/SocketContext";
+import CaptainMap from "../../components/CaptainMap";
+import { useUser } from "../../context/UserContext";
 
 export function DashboardPage() {
-  const { user } = useAppContext();
+  const { user } = useUser();
   const [bookingStage, setBookingStage] = useState("searching");
   const [selectedCab, setSelectedCab] = useState(null);
   const [fares, setFares] = useState(null);
+  const { sendEvent, connected } = useSocket();
 
+  useEffect(() => {
+    console.log("USER:", user);
+    console.log("CONNECTED:", connected);
+
+    if (connected && user?._id) {
+      console.log("SENDING JOIN EVENT");
+
+      sendEvent("join", {
+        userId: user._id,
+        userType: "user",
+      });
+    }
+  }, [user, connected]);
   const VEHICLE_OPTIONS = [
     {
       id: "car",
@@ -36,20 +52,16 @@ export function DashboardPage() {
   ];
 
   return (
-    <div
-      // Changed h-screen to calc to account for the 16 (4rem) header
-      className="relative h-[calc(100vh-64px)] w-full bg-cover bg-center flex items-end md:items-stretch overflow-hidden"
-      style={{
-        backgroundImage:
-          "url('https://images.unsplash.com/photo-1730317195705-8a265a59ed1b?auto=format&fit=crop&q=80&w=1600')",
-      }}
-    >
-      {/* Background Overlay to make content pop */}
-      <div className="absolute inset-0 bg-black/10 md:bg-transparent" />
+    <div className="relative h-[calc(100vh-64px)] w-full flex items-end md:items-stretch overflow-hidden">
+      {/* MAP BACKGROUND */}
+      <CaptainMap />
 
-      {/* Sidebar Container */}
+      {/* Overlay */}
+      <div className="absolute inset-0 bg-black/10 md:bg-transparent z-0" />
+
+      {/* Sidebar Panels */}
       <div className="w-full md:w-[400px] lg:w-[450px] p-4 md:p-6 flex flex-col justify-end z-10 relative">
-        {/* Stage 1: Location Search */}
+        {/* Stage 1 */}
         {bookingStage === "searching" && (
           <LocationPanel
             userName={user?.name}
@@ -57,7 +69,7 @@ export function DashboardPage() {
           />
         )}
 
-        {/* Stage 2: Vehicle Selection */}
+        {/* Stage 2 */}
         {bookingStage === "selecting" && (
           <VehiclePanel
             fares={fares}
@@ -70,27 +82,16 @@ export function DashboardPage() {
           />
         )}
 
-        {/* Stage 4: Driver */}
+        {/* Stage 3 */}
         {bookingStage === "driver" && (
           <ConfirmPanel
             driver={selectedCab}
-            onConfirm={() => {
-              setBookingStage("confirmed");
-              // Set the current ride in context for fare/pickup/drop
-              if (selectedCab) {
-                setCurrentRide({
-                  cab: selectedCab,
-                  pickup: pickupLocation,
-                  drop: dropLocation,
-                  fare: fares,
-                });
-              }
-            }}
+            onConfirm={() => setBookingStage("confirmed")}
             onBack={() => setBookingStage("selecting")}
           />
         )}
 
-        {/* Stage 4: Confirmation */}
+        {/* Stage 4 */}
         {bookingStage === "confirmed" && (
           <RideStatusPanel
             cab={selectedCab}
@@ -104,4 +105,74 @@ export function DashboardPage() {
       </div>
     </div>
   );
+
+  // return (
+  //   <div
+  //     // Changed h-screen to calc to account for the 16 (4rem) header
+  //     className="relative h-[calc(100vh-64px)] w-full bg-cover bg-center flex items-end md:items-stretch overflow-hidden"
+  //     style={{
+  //       backgroundImage:
+  //         "url('https://images.unsplash.com/photo-1730317195705-8a265a59ed1b?auto=format&fit=crop&q=80&w=1600')",
+  //     }}
+  //   >
+  //     {/* Background Overlay to make content pop */}
+  //     <div className="absolute inset-0 bg-black/10 md:bg-transparent" />
+
+  //     {/* Sidebar Container */}
+  //     <div className="w-full md:w-[400px] lg:w-[450px] p-4 md:p-6 flex flex-col justify-end z-10 relative">
+  //       {/* Stage 1: Location Search */}
+  //       {bookingStage === "searching" && (
+  //         <LocationPanel
+  //           userName={user?.name}
+  //           onLocationsSet={() => setBookingStage("selecting")}
+  //         />
+  //       )}
+
+  //       {/* Stage 2: Vehicle Selection */}
+  //       {bookingStage === "selecting" && (
+  //         <VehiclePanel
+  //           fares={fares}
+  //           setFares={setFares}
+  //           onBack={() => setBookingStage("searching")}
+  //           onSelect={(cab) => {
+  //             setSelectedCab(cab);
+  //             setBookingStage("driver");
+  //           }}
+  //         />
+  //       )}
+
+  //       {/* Stage 4: Driver */}
+  //       {bookingStage === "driver" && (
+  //         <ConfirmPanel
+  //           driver={selectedCab}
+  //           onConfirm={() => {
+  //             setBookingStage("confirmed");
+  //             // Set the current ride in context for fare/pickup/drop
+  //             if (selectedCab) {
+  //               setCurrentRide({
+  //                 cab: selectedCab,
+  //                 pickup: pickupLocation,
+  //                 drop: dropLocation,
+  //                 fare: fares,
+  //               });
+  //             }
+  //           }}
+  //           onBack={() => setBookingStage("selecting")}
+  //         />
+  //       )}
+
+  //       {/* Stage 4: Confirmation */}
+  //       {bookingStage === "confirmed" && (
+  //         <RideStatusPanel
+  //           cab={selectedCab}
+  //           onBack={() => setBookingStage("selecting")}
+  //           onCancel={() => {
+  //             setSelectedCab(null);
+  //             setBookingStage("searching");
+  //           }}
+  //         />
+  //       )}
+  //     </div>
+  //   </div>
+  // );
 }

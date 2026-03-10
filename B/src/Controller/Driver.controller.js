@@ -1,4 +1,5 @@
 const { validationResult } = require("express-validator");
+const blacklisttoken = require("../models/blacklist.model");
 const CaptainModel = require("../models/Captain.model");
 
 async function registerCaptain(req, res) {
@@ -62,6 +63,8 @@ async function registerCaptain(req, res) {
 
   res.cookie("token", token, {
     httpOnly: true,
+    sameSite: "lax",
+    secure: false,
   });
 
   res.status(201).json({
@@ -89,12 +92,49 @@ async function loginCaptian(req, res) {
   }
 
   const token = await captain.generateAuthToken();
-  res.cookie("token", token);
-  res.status(201).json({
+  res.cookie("token", token, {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: false,
+  });
+  res.status(200).json({
     message: "Loggedin Successfully",
     token,
     captain,
   });
 }
 
-module.exports = { registerCaptain, loginCaptian };
+async function getProfile(req, res) {
+  const id = req.captain._id;
+  if (!id) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+  try {
+    const captain = await CaptainModel.findById(req.captain._id);
+    if (!captain) {
+      return res.status(404).json({ message: "User Not Found" });
+    }
+
+    return res.status(200).json({
+      message: "Captail Details Fetched",
+      captain,
+    });
+  } catch (error) {
+    console.error("GetCaptainDetail Error:", error);
+    return res.status(500).json({
+      message: "Error while fetching captain details",
+      error: error.message,
+    });
+  }
+}
+
+async function logOutCaptain(req, res) {
+  const { token } = req.cookies;
+  if (!token) {
+    return res.status(400).json({ message: "Token missing" });
+  }
+  await blacklisttoken.create({ token });
+  res.clearCookie("token");
+  return res.status(200).json({ message: "LogOut Successfully" });
+}
+module.exports = { registerCaptain, loginCaptian, getProfile, logOutCaptain };

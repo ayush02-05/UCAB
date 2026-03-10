@@ -32,6 +32,8 @@ async function registerUser(req, res) {
 
   res.cookie("token", token, {
     httpOnly: true,
+    sameSite: "lax",
+    secure: false,
   });
 
   res.status(201).json({
@@ -59,10 +61,8 @@ async function loginUser(req, res) {
   }
 
   const token = await user.generateAuthToken();
-  res.cookie("token", token, {
-    httpOnly: true,
-  });
-  res.status(201).json({
+  res.cookie("token", token);
+  res.status(200).json({
     message: "Loggedin Successfully",
     user,
   });

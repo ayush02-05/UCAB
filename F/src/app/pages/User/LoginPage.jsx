@@ -31,11 +31,8 @@ export function LoginPage() {
       );
 
       // Mock login
-      if (response.status == 201) {
-        login({
-          user: response.data.user,
-          role: "user",
-        });
+      if (response.status === 200) {
+        login(response.data.user);
         toast.success("Login successful!");
         navigate("/dashboard");
       }

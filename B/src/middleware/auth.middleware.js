@@ -1,19 +1,66 @@
 const jwt = require("jsonwebtoken");
 const UserModel = require("../models/User.model");
+const CaptainModel = require("../models/Captain.model");
+const blacklisttoken = require("../models/blacklist.model");
+
+// async function authenticaton(req, res, next) {
+//   const { token } = req.cookies;
+//   if (!token) {
+//     return res.status(401).json({ message: "Unauthorized: No token provided" });
+//   }
+//   try {
+//     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+//     const user = await UserModel.findOne({ _id: decoded._id });
+//     req.user = user;
+//     next();
+//   } catch (error) {
+//     return res.status(400).json(error);
+//   }
+// }
 
 async function authenticaton(req, res, next) {
+  const { token } = req.cookies;
+
+  if (!token) {
+    return res.status(401).json({ message: "Unauthorized: No token provided" });
+  }
+
+  const isBlacklisted = await blacklisttoken.findOne({ token });
+
+  if (isBlacklisted) {
+    return res.status(401).json({ message: "Token expired" });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    const user = await UserModel.findById(decoded._id);
+
+    if (!user) {
+      return res.status(401).json({ message: "User not found" });
+    }
+
+    req.user = user;
+
+    next();
+  } catch (error) {
+    return res.status(401).json({ message: "Invalid token" });
+  }
+}
+
+async function Captainauthenticaton(req, res, next) {
   const { token } = req.cookies;
   if (!token) {
     return res.status(401).json({ message: "Unauthorized: No token provided" });
   }
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await UserModel.findOne({ _id: decoded._id });
-    req.user = user;
+    const captain = await CaptainModel.findOne({ _id: decoded._id });
+    req.captain = captain;
     next();
   } catch (error) {
     return res.status(400).json(error);
   }
 }
 
-module.exports = { authenticaton };
+module.exports = { authenticaton, Captainauthenticaton };

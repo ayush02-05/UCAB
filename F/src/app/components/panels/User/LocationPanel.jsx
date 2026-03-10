@@ -160,7 +160,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { MapPin } from "lucide-react";
 import { useForm } from "react-hook-form";
-import { useAppContext } from "../../context/AppContext";
+import { useAppContext } from "../../../context/AppContext";
 
 export function LocationPanel({
   userName,

@@ -11,6 +11,7 @@ import { RideTrackingPage } from "../app/pages/User/RideTrackingPage";
 import { HistoryPage } from "../app/pages/User/HistoryPage";
 import { PaymentPage } from "../app/pages/User/PaymentPage";
 import { DriverLogin } from "../app/pages/Captain/DriverLogin";
+import RideRequestPage from "../app/pages/Captain/RideRequestPage";
 import DriverDashboard from "../app/pages/Captain/DriverDashboard";
 import UserProtectedRoute from "./ProtectedRoutes/UserProtectedRoute";
 import CaptainProtectedRoute from "./ProtectedRoutes/CaptainProtectedRoute";
@@ -44,6 +45,14 @@ function MainRoutes() {
             element={
               <CaptainProtectedRoute>
                 <DriverDashboard />
+              </CaptainProtectedRoute>
+            }
+          />
+          <Route
+            path="captain-rides"
+            element={
+              <CaptainProtectedRoute>
+                <RideRequestPage />
               </CaptainProtectedRoute>
             }
           />

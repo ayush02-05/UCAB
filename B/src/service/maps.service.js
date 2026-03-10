@@ -1,4 +1,5 @@
 const axios = require("axios");
+const CaptainModel = require("../models/Captain.model");
 
 const NOMINATIM = "https://nominatim.openstreetmap.org";
 const OSRM = "http://router.project-osrm.org";
@@ -18,7 +19,7 @@ const getCoordinatesFromAddress = async (address) => {
     }
 
     return {
-      lat: response.data[0].lat,
+      ltd: response.data[0].ltd,
       lng: response.data[0].lon,
     };
   } catch (error) {
@@ -37,7 +38,7 @@ const getDistanceTimefromAddress = async (pickup, destination) => {
   const drop = await getCoordinatesFromAddress(destination);
 
   // Routing
-  const url = `${OSRM}/route/v1/driving/${origin.lng},${origin.lat};${drop.lng},${drop.lat}?overview=false`;
+  const url = `${OSRM}/route/v1/driving/${origin.lng},${origin.ltd};${drop.lng},${drop.ltd}?overview=false`;
 
   const response = await axios.get(url);
 
@@ -71,7 +72,7 @@ const getAutoCompleteSuggestions = async (query, localCity = "Jabalpur") => {
       city: place.properties.city,
       state: place.properties.state,
       country: place.properties.country,
-      lat: place.geometry.coordinates[1],
+      ltd: place.geometry.coordinates[1],
       lng: place.geometry.coordinates[0],
       full_address:
         place.properties.name +
@@ -98,8 +99,19 @@ const getAutoCompleteSuggestions = async (query, localCity = "Jabalpur") => {
   }
 };
 
+const getCaptainIntheRadius = async (ltd, lng, radius) => {
+  const captains = await CaptainModel.find({
+    location: {
+      $geoWithin: {
+        $centerSphere: [[lng, ltd], radius / 3963.2],
+      },
+    },
+  });
+};
+
 module.exports = {
   getCoordinatesFromAddress,
   getDistanceTimefromAddress,
   getAutoCompleteSuggestions,
+  getCaptainIntheRadius,
 };
