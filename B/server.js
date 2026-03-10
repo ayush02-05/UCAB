@@ -5,7 +5,7 @@ const ConnectToDB = require("./src/db/db");
 
 const httpServer = createServer(app);
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 4000;
 
 const initSocketServer = require("./src/service/Socket.service");
 
